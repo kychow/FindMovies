@@ -1,7 +1,9 @@
 package com.kychow.trailerexplorer;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
+import android.content.Intent;
+import android.content.res.Configuration;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,25 +11,43 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.kychow.trailerexplorer.models.Config;
 import com.kychow.trailerexplorer.models.Movie;
+
+import org.parceler.Parcels;
 
 import java.util.ArrayList;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import jp.wasabeef.glide.transformations.RoundedCornersTransformation;
+
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> {
 
-    // list of movies
     ArrayList<Movie> movies;
+    // image url config
+    Config config;
+    // rendering context
+    Context context;
 
     //initiate with list
     public MovieAdapter(ArrayList<Movie> movies) {
         this.movies = movies;
     }
 
+    public Config getConfig() {
+        return config;
+    }
+
+    public void setConfig(Config config) {
+        this.config = config;
+    }
+
     // creates and inflates new view
     @Override
-    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         // get context and create inflater
-        Context context = parent.getContext();
+        context=parent.getContext();
         LayoutInflater inflater = LayoutInflater.from(context);
         // create view using item_movie layout
         View movieView = inflater.inflate(R.layout.item_movie, parent, false);
@@ -37,14 +57,38 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
 
     // binds inflated view to new item
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+    public void onBindViewHolder(ViewHolder holder, int position) {
         // get movie data at specified position
         Movie movie = movies.get(position);
         // populate view with movie data
         holder.tvTitle.setText(movie.getTitle());
         holder.tvOverview.setText(movie.getOverview());
 
-        // TODO - set image using Gl ide
+        // determine current orientation
+        boolean isPortrait = context.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT;
+
+        // build url for poster image
+        String imageUrl = null;
+
+        // if im portrait mode, load poster image
+        if (isPortrait) {
+            imageUrl = config.getImageUrl(config.getPosterSize(), movie.getPosterPath());
+        } else {
+            // load backdrop image
+            imageUrl = config.getImageUrl(config.getBackdropSize(), movie.getBackdropPath());
+        }
+
+        // get correct placeholder & imageView for current orientation
+        int placeholderId = isPortrait ? R.drawable.flicks_movie_placeholder : R.drawable.flicks_backdrop_placeholder;
+        ImageView imageView = isPortrait ? holder.ivPosterImage : holder.ivBackdropImage;
+
+        // load image using glide
+        GlideApp.with(context)
+                .load(imageUrl)
+                .transform(new RoundedCornersTransformation(15, 0))
+                .placeholder(placeholderId)
+                .error(placeholderId)
+                .into(imageView);
     }
 
     // returns size of data set
@@ -53,23 +97,37 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
         return movies.size();
     }
 
-    // create viewholder as static inner class
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    // create view holder, implements View.OnClickListener
+    public class ViewHolder extends RecyclerView.ViewHolder implements  View.OnClickListener {
 
-        // track view objects
-        ImageView ivPosterImage;
-        TextView tvTitle;
-        TextView tvOverview;
+        @Nullable @BindView(R.id.ivPosterImage) ImageView ivPosterImage;
+        @Nullable @BindView(R.id.ivBackdropImage) ImageView ivBackdropImage;
+        @BindView(R.id.tvTitle) TextView tvTitle;
+        @BindView(R.id.tvOverview) TextView tvOverview;
 
         public ViewHolder(View itemView) {
             super(itemView);
-            // lookup view objects by id
-            ivPosterImage = itemView.findViewById(R.id.ivPosterImage);
-            tvOverview = (TextView) itemView.findViewById(R.id.tvTitle);
+            ButterKnife.bind(this, itemView);
+            itemView.setOnClickListener(this);
         }
+
         public TextView getTvTitle() {
             return tvTitle;
         }
+        // when user clicks on row, show MovieDetailsActivity for selected movie
+
+        @Override
+        public void onClick(View v) {
+            int position = getAdapterPosition();
+            // check position is valid
+            if (position != RecyclerView.NO_POSITION) {
+                Movie movie = movies.get(position);
+                Intent intent = new Intent (context, MovieDetailsActivity.class);
+                intent.putExtra(Movie.class.getSimpleName(), Parcels.wrap(movie));
+                context.startActivity(intent);
+            }
+        }
+
     }
 
 }

@@ -2,9 +2,12 @@ package com.kychow.trailerexplorer;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.kychow.trailerexplorer.models.Config;
 import com.kychow.trailerexplorer.models.Movie;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -16,6 +19,8 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import cz.msebera.android.httpclient.Header;
 
 public class MainActivity extends AppCompatActivity {
@@ -36,6 +41,12 @@ public class MainActivity extends AppCompatActivity {
     String posterSize;
     // list of currently playing movies
     ArrayList<Movie> movies;
+    // recycler view
+    @BindView(R.id.rvMovies) RecyclerView rvMovies;
+    // adapter wired to recycler view
+    MovieAdapter adapter;
+    // image config
+    Config config;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +56,14 @@ public class MainActivity extends AppCompatActivity {
         client = new AsyncHttpClient();
         // initialize movie list
         movies = new ArrayList<>();
+        // initialize adapter -- movies array cannot be reinitialized after this point
+        adapter = new MovieAdapter(movies);
+
+        ButterKnife.bind(this);
+        // resolve recycler view
+        rvMovies.setLayoutManager(new LinearLayoutManager(this));
+        rvMovies.setAdapter(adapter);
+
         // get configuration on app creation
         getConfiguration();
 
@@ -68,6 +87,8 @@ public class MainActivity extends AppCompatActivity {
                     for (int i = 0; i < results.length(); i++) {
                         Movie movie = new Movie (results.getJSONObject(i));
                         movies.add(movie);
+                        // notify adapter a row was added
+                        adapter.notifyItemInserted(movies.size() - 1 );
                     }
                     Log.i(TAG, String.format("Loaded %s movies", results.length()));
                 } catch (JSONException e) {
@@ -95,14 +116,13 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 try {
-                    JSONObject images = response.getJSONObject("images");
-                    // get i mage base url
-                      imageBaseUrl = response.getString("secure_base_url");
-                    // get poster size
-                    JSONArray posterSizeOptions = images.getJSONArray("poster_sizes");
-                    // use option at index 3 or w342 as fallback
-                    posterSize = posterSizeOptions.optString(3, "w342");
-                    Log.i(TAG, String.format("loaded configurations with imageBaseUrl %s and posterSize %s", imageBaseUrl, posterSize));
+                    config = new Config(response);
+                    Log.i(TAG,
+                            String.format("loaded configurations with imageBaseUrl %s and posterSize %s",
+                                    config.getImageBaseUrl(),
+                                    config.getPosterSize()));
+                    // pass config to adapter
+                    adapter.setConfig(config);
                     // get the now playing movie list
                     getNowPlaying();
                 } catch (JSONException e) {
