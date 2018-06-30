@@ -28,6 +28,7 @@ import butterknife.OnClick;
 import cz.msebera.android.httpclient.Header;
 import jp.wasabeef.glide.transformations.RoundedCornersTransformation;
 
+import static android.text.Layout.JUSTIFICATION_MODE_INTER_WORD;
 import static com.kychow.trailerexplorer.MainActivity.API_BASE_URL;
 import static com.kychow.trailerexplorer.MainActivity.API_KEY_PARAM;
 
@@ -57,11 +58,11 @@ public class MovieDetailsActivity extends AppCompatActivity {
         Log.d("MovieDetailsActivity", String.format("Showing details for '%s'", movie.getTitle()));
 
         config = (Config) Parcels.unwrap(getIntent().getParcelableExtra("image_info"));
-//        Log.d("MovieDetailsActivity", String.format("Showing details for '%s'", config.getImageUrl());
 
         // set title & overview
         tvTitle.setText(movie.getTitle());
         tvOverview.setText(movie.getOverview());
+        tvOverview.setJustificationMode(JUSTIFICATION_MODE_INTER_WORD);
 
         // convert 0.1 vote average to 0.05: divide by 2
         float voteAverage = movie.getVoteAverage().floatValue();

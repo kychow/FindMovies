@@ -77,6 +77,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
         // populate view with movie data
         holder.tvTitle.setText(movie.getTitle());
         holder.tvOverview.setText(movie.getOverview());
+        //holder.tvOverview.setJustificationMode(JUSTIFICATION_MODE_INTER_WORD);
 
         // determine current orientation
         boolean isPortrait = context.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT;
