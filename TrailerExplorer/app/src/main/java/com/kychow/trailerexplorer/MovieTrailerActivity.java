@@ -1,7 +1,9 @@
 package com.kychow.trailerexplorer;
 
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.WindowManager;
 
 import com.google.android.youtube.player.YouTubeBaseActivity;
 import com.google.android.youtube.player.YouTubeInitializationResult;
@@ -13,13 +15,16 @@ import butterknife.ButterKnife;
 
 public class MovieTrailerActivity extends YouTubeBaseActivity {
 
-    @BindView(R.id.player) YouTubePlayerView playerView;
+    @BindView(R.id.player)
+    YouTubePlayerView playerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movie_trailer);
         ButterKnife.bind(this);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 
         final String videoId = getIntent().getStringExtra("key-string");
 

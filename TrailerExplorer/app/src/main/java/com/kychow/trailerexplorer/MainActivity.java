@@ -52,6 +52,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         // initialize client
         client = new AsyncHttpClient();
         // initialize movie list
@@ -66,7 +67,6 @@ public class MainActivity extends AppCompatActivity {
 
         // get configuration on app creation
         getConfiguration();
-
     }
 
     // get list of currently playing movies from API

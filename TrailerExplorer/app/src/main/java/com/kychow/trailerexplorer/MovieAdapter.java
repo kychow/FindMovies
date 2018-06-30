@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,6 +30,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
     Config config;
     // rendering context
     Context context;
+    Boolean changeColor;
 
     //initiate with list
     public MovieAdapter(ArrayList<Movie> movies) {
@@ -51,6 +53,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
         LayoutInflater inflater = LayoutInflater.from(context);
         // create view using item_movie layout
         View movieView = inflater.inflate(R.layout.item_movie, parent, false);
+        changeColor = false;
         // return new ViewHolder
         return new ViewHolder(movieView);
     }
@@ -58,6 +61,17 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
     // binds inflated view to new item
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
+
+
+        if (changeColor) {
+            if (changeColor) {
+                holder.tvOverview.setTextColor(ContextCompat.getColor(context, R.color.colorPrimaryDark));
+                holder.tvTitle.setText(ContextCompat.getColor(context, R.color.colorPrimaryDark));
+            } else {
+                holder.tvOverview.setTextColor(ContextCompat.getColor(context, R.color.colorPrimary));
+                holder.tvTitle.setText(ContextCompat.getColor(context, R.color.colorPrimary));
+            }
+        }
         // get movie data at specified position
         Movie movie = movies.get(position);
         // populate view with movie data
@@ -126,7 +140,6 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
                     intent.putExtra(Movie.class.getSimpleName(), Parcels.wrap(movie));
                     intent.putExtra("image_info", Parcels.wrap(config));
                     context.startActivity(intent);
-
                 }
         }
 
