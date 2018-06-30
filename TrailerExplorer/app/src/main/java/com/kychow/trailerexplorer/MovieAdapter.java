@@ -117,17 +117,22 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
         // when user clicks on row, show MovieDetailsActivity for selected movie
 
         @Override
-        public void onClick(View v) {
-            int position = getAdapterPosition();
-            // check position is valid
-            if (position != RecyclerView.NO_POSITION) {
-                Movie movie = movies.get(position);
-                Intent intent = new Intent (context, MovieDetailsActivity.class);
-                intent.putExtra(Movie.class.getSimpleName(), Parcels.wrap(movie));
-                context.startActivity(intent);
-            }
+            public void onClick(View v) {
+                int position = getAdapterPosition();
+                // check position is valid
+                if (position != RecyclerView.NO_POSITION) {
+                    Movie movie = movies.get(position);
+                    Intent intent = new Intent (context, MovieDetailsActivity.class);
+                    intent.putExtra(Movie.class.getSimpleName(), Parcels.wrap(movie));
+                    intent.putExtra("image_info", Parcels.wrap(config));
+                    context.startActivity(intent);
+
+                }
         }
 
+
     }
+
+
 
 }

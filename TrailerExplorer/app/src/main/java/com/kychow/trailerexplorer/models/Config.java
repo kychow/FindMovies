@@ -3,7 +3,9 @@ package com.kychow.trailerexplorer.models;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.parceler.Parcel;
 
+@Parcel
 public class Config {
 
     // base url for loading images
@@ -13,6 +15,8 @@ public class Config {
     // backdrop size used when fetching images
     String backdropSize;
 
+    public Config() {
+    }
     public Config(JSONObject object) throws JSONException {
         JSONObject images = object.getJSONObject("images");
         // get image base url
@@ -29,7 +33,6 @@ public class Config {
     // helper method for creating urls
     public String getImageUrl(String size, String path) {
         return String.format("%s%s%s", imageBaseUrl, size, path); // concatenate all 3
-
     }
 
     public String getImageBaseUrl() {
