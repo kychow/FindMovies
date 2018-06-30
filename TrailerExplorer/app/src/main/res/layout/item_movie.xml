@@ -12,7 +12,7 @@
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
         android:paddingLeft="7dp"
-        app:srcCompat="@android:color/black" />
+        app:srcCompat="@android:color/background_light" />
 
     <TextView
         android:id="@+id/tvTitle"
@@ -21,12 +21,12 @@
         android:layout_alignParentEnd="true"
         android:layout_alignParentTop="true"
         android:layout_toEndOf="@+id/ivPosterImage"
+        android:autoSizeTextType="uniform"
+        android:paddingBottom="4dp"
         android:paddingLeft="7dp"
         android:paddingRight="7dp"
-        android:paddingBottom="4dp"
-        android:autoSizeTextType="uniform"
-        android:text="Movie Title"
         android:singleLine="true"
+        android:text="Movie Title"
         android:textAppearance="@android:style/TextAppearance.Large"
         android:textColor="?attr/colorBackgroundFloating" />
 
@@ -38,8 +38,8 @@
         android:layout_alignParentEnd="true"
         android:layout_below="@+id/tvTitle"
         android:layout_toEndOf="@+id/ivPosterImage"
-        android:text="Movie overview and synposis"
         android:paddingLeft="7dp"
+        android:text="Movie overview and synposis"
         android:textColor="?attr/colorBackgroundFloating" />
 
 </RelativeLayout>
